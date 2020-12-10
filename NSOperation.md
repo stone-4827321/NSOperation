@@ -1,6 +1,4 @@
-# NSOperation
-
-## 概述
+# 概述
 
 - `NSOperation`、`NSOperationQueue` 是基于 GCD 更高一层的封装，分别对应任务和队列，完全面向对象。但是比 GCD 更简单易用、代码可读性也更高。
 
@@ -37,7 +35,7 @@
 
   
 
-## NSOperation
+# NSOperation
 
 - 任务相关的抽象类，不具备封装操作的能力，必须使用其子类。
   - 使用子类 `NSInvocationOperation`。
@@ -57,7 +55,7 @@
   - `isCancelled`：操作是否已经取消；
   - `isAsynchronous`：操作是否是异步执行，默认为 NO。
 
-### NSInvocationOperation
+## NSInvocationOperation
 
 - 创建任务
 
@@ -94,7 +92,7 @@
   [queue addOperation:op];
   ```
 
-### NSBlockOperation
+## NSBlockOperation
 
 - 创建任务：
 
@@ -124,7 +122,7 @@
 
 - 当只有一个任务时，`start` 开启的任务一定在当前线程执行，当追加多个任务后，创建任务和追加任务的执行线程则不一定，可能是当前线程，也可能是其他线程。
 
-### 自定义子类
+## 自定义子类
 
 - 对于非并发操作，只需要重写 `main` 方法。
   - `start` 方法返回时操作执行完成；
@@ -137,13 +135,13 @@
   - `finished` 返回操作的完成状态，在发生变化时需要跑出 KVO。
 
 
-## NSOperationQueue
+# NSOperationQueue
 
 - 将 `NSOperation` 对象添加 `NSOperationQueue` 中，来管理操作对象非常方便：从队列中拿出操作、以及分配到对应线程的工作都是由系统处理的。
 - **只要是创建了队列，在队列中的操作，就会在子线程中执行，并且默认并发和异步**。
 - 对于添加到队列中的操作，首先进入准备就绪的状态（就绪状态取决于操作之间的依赖关系），然后根据进入就绪状态的操作的开始执行顺序（非结束执行顺序）由操作之间相对的优先级决定（优先级是操作对象自身的属性）。
 
-### 添加操作
+## 添加操作
 
 - `NSOperationQueue` 队列添加若干个 `NSBlockOperation` 操作：
   - `addOperation:` 添加一个操作。
@@ -153,13 +151,13 @@
 
 - 操作对象添加 `NSOperationQueue` 中后，不要再修改操作对象的状态。因为操作对象可能会在任何时候运行,改变操作对象的依赖或数据会产生无法预估的问题。只能查看操作对象的状态，比如是否正在运行、等待运行、已经完成等。
 
-### 并发数目
+## 并发数目
 
 - 设置 `NSOperationQueue` 的属性 `maxConcurrentOperationCount`，表示同一时间最多能调度的 `NSOperation` 对象数。
 - 默认值是 -1，不可设置为 0。
 - 当设置为 1 时表示 `NSOperationQueue` 每次只能执行一个 `NSOperation` 对象。不过操作对象执行的顺序会依赖于其它因素，比如操作是否准备好和操作对象的优先级等。因此串行化的 operation queue 并不等同于 GCD 中的串行 dispatch queue。
 
-### 操作依赖
+## 操作依赖
 
 - `NSBlockOperation` 操作增加和移除另外一个 `NSBlockOperation` 操作的依赖：
 
@@ -193,7 +191,7 @@
 
 - 依赖是不会区分其操作是成功的完成还是失败的完成，即取消操作也视为完成。
 
-### 优先级
+## 优先级
 
 - `NSOperation` 的属性 `queuePriority` 决定操作执行的优先顺序：
   - 只适用于同一队列的操作；
@@ -204,7 +202,7 @@
   - 正确的设置可以更加智能的分配硬件资源，以便于提高执行效率和控制电量。
 - 队列中的操作的执行顺序是根据它们的状态、优先级和依赖关系来决定的。而服务质量则会影响操作的完成时间。
 
-### 暂停取消
+## 暂停取消
 
 - 设置 `NSOperationQueue` 的属性 `suspended`，YES 表示暂停当前队列上尚未开始执行的操作，NO 表示继续执行。
 
